@@ -1,0 +1,49 @@
+{% block elementheader %}
+    {# menu-item-active #}
+    <li class="menu-item menu-item-submenu menu-item-rel menu-item-open-dropdown" data-menu-toggle="click" aria-haspopup="true">
+        <a href="javascript:;" class="menu-link menu-toggle">
+            <span class="svg-icon menu-icon">
+                <i class="flaticon2-settings"></i>
+            </span>
+            <span class="menu-text">Paramètres</span>
+            <i class="menu-arrow"></i>
+        </a>
+        <div class="menu-submenu menu-submenu-classic menu-submenu-left" data-hor-direction="menu-submenu-left">
+            <ul class="menu-subnav">
+                <li class="menu-item" aria-haspopup="true">
+                    <a href="{{ path('marque_index') }}" class="menu-link">
+                        <span class="svg-icon menu-icon">
+                            <i class="far fa-circle"></i>
+                        </span>
+                        <span class="menu-text">Fonction</span>
+                    </a>
+                </li>
+                <li class="menu-item" aria-haspopup="true">
+                    <a href="{{ path('modele_index') }}" class="menu-link">
+                        <span class="svg-icon menu-icon">
+                            <i class="far fa-circle"></i>
+                        </span>
+                        <span class="menu-text">Groupe</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </li>
+    <li class="menu-item menu-item-submenu" data-menu-toggle="click" aria-haspopup="true">
+        <a href="{{ path('engin_index') }}" class="menu-link">
+            <span class="svg-icon menu-icon">
+                <i class="flaticon2-list-1"></i>
+            </span>
+            <span class="menu-text">Liste des utilisateurs</span>
+        </a>
+    </li>
+    <li class="menu-item menu-item-submenu menu-item-rel menu-item-open-dropdown" data-menu-toggle="click" aria-haspopup="true">
+        <a href="javascript:;" class="menu-link menu-toggle">
+            <span class="svg-icon menu-icon">
+                <i class="flaticon2-printer"></i>
+            </span>
+            <span class="menu-text">Editions</span>
+            <i class="menu-arrow"></i>
+        </a>
+    </li>
+{% endblock %}

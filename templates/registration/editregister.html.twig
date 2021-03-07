@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Enregistrer{% endblock %}
+
+{% block content %}
+    <div class="container mt-0">
+        {% form_theme UserForm 'bootstrap_4_layout.html.twig' %}
+
+        {{ form(UserForm) }}
+
+    </div>
+{% endblock %}

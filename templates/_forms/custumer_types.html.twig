@@ -1,0 +1,11 @@
+{# templates/_forms/customer_types.html.twig #}
+{% block postal_address_row %}
+    {% for child in form.children|filter(child => not child.rendered) %}
+        <div class="form-group">
+            {{ form_label(child) }}
+            {{ form_widget(child) }}
+            {{ form_help(child) }}
+            {{ form_errors(child) }}
+        </div>
+    {% endfor %}
+{% endblock %}

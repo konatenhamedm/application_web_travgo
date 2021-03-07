@@ -1,0 +1,164 @@
+{% extends 'blocks.html.twig' %}
+
+{% block grid_scripts_goto %}
+   
+function {{ grid.hash }}_goto(url, data, type, event)
+{
+    type = type || 'GET';
+    data = data || [];
+
+    $.ajax({
+        url: url,
+        data: data,
+        type: type,
+        beforeSend: function () {
+            if (event) {
+                $('.grid-overlay').removeClass('display-none');
+            }
+        }
+    }).done(function( msg ) {
+        $('#grid-wrapper-{{ grid.hash|replace({'grid_': ''}) }}')
+            .load(url + ' #grid-wrapper-{{ grid.hash|replace({'grid_': ''}) }}', function () {
+            if (event) {
+                 $('.grid-overlay').addClass('display-none');
+            }
+            
+        });
+    });
+
+    return false
+}
+{% endblock grid_scripts_goto %}
+
+{% block grid_scripts_submit_form %}
+function {{ grid.hash }}_submitForm(event, form)
+{
+    if (!event || event.type != 'keypress' || event.which == 13) {
+        var data = '';
+        $('.grid-filter-operator select, .grid-filter-input-query-from, .grid-filter-input-query-to, .grid-filter-select-query-from, .grid-filter-select-query-to', form).each(function () {
+            if ($(this).is(':disabled') == false) {
+                var name = $(this).attr('name');
+                var value = $(this).val();
+                if (value != null) {
+                    if ($(this).attr('multiple') == 'multiple') {
+                        for(var i= 0; i < value.length; i++)
+                        {
+                            data += '&' + name + '=' + value[i];
+                        }
+                    } else {
+                        data += '&' + name + '=' + value;
+                    }
+                } else {
+                    data += '&' + name + '=';
+                }
+            }
+        });
+
+        {{ grid.hash }}_goto('{{ grid.routeUrl }}', data.substring(1), 'POST', event);
+
+        return false;
+    }
+}
+{% endblock grid_scripts_submit_form %}
+
+{% block grid_scripts_ajax %}
+$(function () {
+    // Order and pagerfanta links
+    $('.pagination li.disabled a', '#{{ grid.hash }}').click(function (e) {
+        return false;
+    });
+
+    var items = ['#{{ grid.hash }} a.order', '#{{ grid.hash }} nav a', '#{{ grid.hash }} a.searchOnclick', '#{{ grid.hash }} .pagination li:not(.disabled) a'];
+
+    $(document).on('click', items.join(','), function () {
+        {{ grid.hash }}_goto(this.href);
+
+        return false;
+    });
+
+    // Order and pagerfanta links
+    /*$('a.order, nav a, a.searchOnClick, .pagination li:not(.disabled) a', '#{{ grid.hash }}').click(function () {
+        {{ grid.hash }}_goto(this.href);
+
+        return false;
+    });*/
+
+
+    $(document).on('click', '#{{ grid.hash }} a.grid-reset', function () {
+        {{ grid.hash }}_reset();
+
+        return false;
+    });
+
+
+    // Mass actions submit
+    $(document).on('click', '#{{ grid.hash }} input.submit-massaction', function () {
+        var selector = $('#{{ grid.hash }} .grid_massactions select');
+
+        {{ grid.hash }}_goto('{{ grid.routeUrl }}', selector.attr('name') + '=' + selector.val(), 'POST');
+
+        return false;
+    });
+
+    // Grid_search submit (load only one time)
+    $(document).on('submit', '#{{ grid.hash }}_search', function (event) {
+        {{ grid.hash }}_submitForm(event, this);
+
+        return false;
+    });
+});
+
+
+/*var $table = $('.table--grid');
+
+var headers = [];
+
+$('.grid-row-titles').find('th').each(function (index, element) {
+    headers.push($(element).text());
+});
+
+
+
+var data = [];
+
+$('.grid-row-cells').each(function () {
+   var $this = $(this);
+    var current_data = [];
+
+   $this.find('td').each(function (index, element) {
+     
+      current_data.push($(element).html());
+   });
+
+  
+   data.push(current_data);
+});
+
+var data_len = data.length;
+
+
+
+var table = '<table>';
+
+for (var i = 0; i < data_len; i++) {
+    var current_data = data[i];
+
+    current_data.forEach(function (_data , index) {
+        var header = headers[index];
+        table += `<tr class="row-vertical">
+                 <td>${header}</td>
+              <td>${_data}</td></tr>`;
+           
+    });
+
+}
+
+
+table += '</table>';
+
+//console.log(table);
+
+$('.portlet-body').append(table);*/
+
+
+{% endblock grid_scripts_ajax %}

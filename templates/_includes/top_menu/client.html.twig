@@ -1,0 +1,94 @@
+{% block elementheader %}
+    {# menu-item-active #}
+    <li class="menu-item menu-item-submenu menu-item-rel menu-item-open-dropdown" data-menu-toggle="click" aria-haspopup="true">
+        <a href="javascript:;" class="menu-link menu-toggle">
+            <span class="svg-icon menu-icon">
+                <i class="flaticon2-settings"></i>
+            </span>
+            <span class="menu-text">Paramètres</span>
+            <i class="menu-arrow"></i>
+        </a>
+        <div class="menu-submenu menu-submenu-classic menu-submenu-left" data-hor-direction="menu-submenu-left">
+            <ul class="menu-subnav">
+                <li class="menu-item" aria-haspopup="true">
+                    <a href="{{ path('civilite_index') }}" class="menu-link">
+                        <span class="svg-icon menu-icon">
+                            <i class="far fa-circle"></i>
+                        </span>
+                        <span class="menu-text">Civilité</span>
+                    </a>
+                </li>
+                <li class="menu-item" aria-haspopup="true">
+                    <a href="{{ path('commune_index') }}" class="menu-link">
+                        <span class="svg-icon menu-icon">
+                            <i class="far fa-circle"></i>
+                        </span>
+                        <span class="menu-text">Commune</span>
+                        </span> 
+                    </a>
+                </li>
+                <li class="menu-item" aria-haspopup="true">
+                    <a href="{{ path('secteur_activite_index') }}" class="menu-link">
+                        <span class="svg-icon menu-icon">
+                            <i class="far fa-circle"></i>
+                        </span>
+                        <span class="menu-text">Secteur d'activité</span>
+                    </a>
+                </li>
+                <li class="menu-item" aria-haspopup="true">
+                    <a href="{{ path('centre_impot_index') }}" class="menu-link">
+                        <span class="svg-icon menu-icon">
+                            <i class="far fa-circle"></i>
+                        </span>
+                        <span class="menu-text">Centre d'imposition</span>
+                    </a>
+                </li>
+                <li class="menu-item" aria-haspopup="true">
+                    <a href="{{ path('regime_impot_index') }}" class="menu-link">
+                        <span class="svg-icon menu-icon">
+                            <i class="far fa-circle"></i>
+                        </span>
+                        <span class="menu-text">Régime d'imposition</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </li>
+    <li class="menu-item menu-item-submenu" data-menu-toggle="click" aria-haspopup="true">
+        <a href="{{ path('prospect_index') }}" class="menu-link">
+            <span class="svg-icon menu-icon">
+                <i class="flaticon2-list-1"></i>
+            </span>
+            <span class="menu-text">Liste des clients</span>
+        </a>
+    </li>
+    <li class="menu-item menu-item-submenu menu-item-rel menu-item-open-dropdown" data-menu-toggle="click" aria-haspopup="true">
+        <a href="javascript:;" class="menu-link menu-toggle">
+            <span class="svg-icon menu-icon">
+                <i class="flaticon2-printer"></i>
+            </span>
+            <span class="menu-text">Editions & Stats</span>
+            <i class="menu-arrow"></i>
+        </a>
+        <div class="menu-submenu menu-submenu-classic menu-submenu-left" data-hor-direction="menu-submenu-left">
+            <ul class="menu-subnav">
+                <li class="menu-item" aria-haspopup="true">
+                    <a href="{# {{ path('marque_index') }} #}#" class="menu-link">
+                        <span class="svg-icon menu-icon">
+                            <i class="flaticon2-printer"></i>
+                        </span>
+                        <span class="menu-text">Edition 1</span>
+                    </a>
+                </li>
+                <li class="menu-item" aria-haspopup="true">
+                    <a href="{# {{ path('marque_index') }} #}#" class="menu-link">
+                        <span class="svg-icon menu-icon">
+                            <i class="flaticon2-printer"></i>
+                        </span>
+                        <span class="menu-text">Edition 2</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </li>
+{% endblock %}

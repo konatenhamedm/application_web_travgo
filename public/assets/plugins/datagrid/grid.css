@@ -1,0 +1,142 @@
+.pager {
+    margin-bottom: 10px;
+    padding-left: 10px;
+}
+.pager .current {
+    border: none;
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    height: 34px;
+    position: relative;
+    text-align: center;
+    top: 2px;
+}
+
+.grid_header, .grid_footer {
+    padding: 5px 8px;
+}
+
+.grid_body .last-column {
+    width: 15%;
+}
+.grid-row-actions {
+    margin-bottom: 0;
+}
+.pager .next, .pager .prev, .grid-row-actions .btn {
+    border-radius: 3px;
+    /*background-color: #eee;
+    border-color: #ddd;
+    color: #23527c;
+    height: 28px;*/
+    margin-left: 5px;
+    margin-right: 5px;
+
+}
+.pager select {
+    border: 1px solid #ddd;
+    height: 28px;
+}
+
+.grid .table {
+    width: 100%!important;
+    margin: 0!important;
+    background-color: #fff;
+}
+
+.grid-filter-input > div:not(.no-float) {
+    float: left;
+}
+
+.grid-filter-input .grid-filter-operator {
+    width: 25%;
+    margin-right: 15px;
+}
+
+.grid-filter-input .grid-filter-operator + .grid-filter-input-query {
+    width: calc(100% - 25% - 15px);
+}
+
+
+/*************Ajout pour gagner de l'espace horizontalement sur le template**********/
+.page-header .page-header-top .page-logo, .page-header .page-header-top {
+    height: 50px;
+}
+
+.page-header .page-header-top .page-logo .logo-default {
+    margin-top: 5px;
+}
+
+.page-header .page-header-top .top-menu {
+    margin: 0;
+}
+
+.page-header {
+    height: auto;
+}
+
+.page-head .page-title {
+    padding-top: 8px;
+    padding-bottom: 10px;
+}
+
+.page-header .page-header-menu {
+    height: 36px;
+}
+
+.page-header .page-header-menu .hor-menu .navbar-nav>li>a {
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
+
+
+.mega-menu-dropdown .dropdown-menu {
+    top: 36px;
+}
+
+.page-header .page-header-menu .hor-menu .navbar-nav>li.mega-menu-dropdown>.dropdown-menu .mega-menu-content {
+    padding: 0;
+}
+
+.page-header .page-header-menu .search-form {
+    margin-top: 0;
+}
+
+.page-content{
+    padding: 5px 0;
+}
+
+.breadcrumb{
+    padding: 0 0 5px;
+}
+
+.grid-row-actions .btn{
+    margin-right: 2px;
+    /*padding: 2px 3px;
+    border: none;
+    display: inline;*/
+}
+
+.table > thead > tr > th {
+    padding: 5px;
+}
+
+.page-footer {
+    padding: 10px 0;
+}
+
+.modal-header{
+    background-color: #3598dc;
+}
+
+.modal-title{
+    color: #ffffff;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.form-group .required {
+    color: #666;
+    font-size: 13px;
+    font-weight: 600;
+    padding-left: 2px;
+}

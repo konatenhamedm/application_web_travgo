@@ -1,0 +1,15 @@
+<ul class="breadcrumb page-breadcrumb">
+    {% for item in items %}
+        {% if not loop.last %}
+            <li>
+                <a href="{{ path(item.route, item.args|default({})) }}">{{ item.label | default('Tableau de bord') }}</a>
+                <i class="fa fa-circle"></i>
+            </li>
+        {% else %}
+            <li><span>{{ item.label }}</span>
+        {% endif %}
+    {% else %}
+        <li><a href="{{ path('home') }}">Tableau de bord</a></li>
+    {% endfor %}
+</ul>
+

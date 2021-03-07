@@ -1,0 +1,35 @@
+{% extends '_includes/index.html.twig' %}
+
+{% block titre %}Liste des <?= $entity_twig_var_plural ?>{% endblock %}
+
+{% block page_content %}
+    <div class="card card-custom">
+        <div class="card-header flex-wrap border-0 pt-6 pb-0">
+            <div class="card-title">
+                {# <h3 class="card-label">JSON Datatable 
+                <span class="d-block text-muted pt-2 font-size-sm">Initialized from remote json file</span></h3> #}
+            </div>
+
+            <div class="card-toolbar">
+                <!--begin::Button-->
+                <a href="{{ path('<?= $route_name ?>_new') }}" class="btn btn-primary font-weight-bolder"  data-toggle="modal" data-target="#exampleModalSizeLg2">
+
+                        <span class="svg-icon svg-icon-md"><i class="ki ki-solid-plus"></i></span>Nouveau
+                    </a>
+
+                    <!--end::Button-->
+            </div>
+
+        </div>
+        <div class="card-body">
+            <!--begin: Search Form-->
+            <!--begin::Search Form-->
+            <div class="mb-7">
+                <div class="row align-items-center">
+                    {{ grid(grid, 'blocks_js.jquery.html.twig') }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+

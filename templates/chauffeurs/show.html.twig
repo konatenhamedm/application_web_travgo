@@ -1,0 +1,47 @@
+{% block page_content %}
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+        <h4 class="modal-title">Détails Chauffeurs</h4>
+    </div>
+   
+    <div class="modal-body">
+        <table class="table table-bordered">
+        <tbody>
+                            <tr>
+                    <th>Id</th>
+                    <td>{{ chauffeur.id }}</td>
+                </tr>
+                            <tr>
+                    <th>Nom</th>
+                    <td>{{ chauffeur.nom }}</td>
+                </tr>
+                            <tr>
+                    <th>Prenoms</th>
+                    <td>{{ chauffeur.prenoms }}</td>
+                </tr>
+                            <tr>
+                    <th>Telephone</th>
+                    <td>{{ chauffeur.telephone }}</td>
+                </tr>
+                            <tr>
+                    <th>Email</th>
+                    <td>{{ chauffeur.email }}</td>
+                </tr>
+                            <tr>
+                    <th>Matricule</th>
+                    <td>{{ chauffeur.matricule }}</td>
+                </tr>
+                    </tbody>
+    </table>
+    </div>
+    <div class="modal-footer">
+        
+        <button type="button" class="btn dark btn-outline" data-dismiss="modal">Fermer</button>
+    </div>
+
+{% endblock %}
+{% block javascripts_inline %}
+    <script>
+        
+    </script>
+{% endblock %}

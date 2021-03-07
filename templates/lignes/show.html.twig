@@ -1,0 +1,51 @@
+{% block page_content %}
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+        <h4 class="modal-title">Détails Lignes</h4>
+    </div>
+   
+    <div class="modal-body">
+        <table class="table table-bordered">
+        <tbody>
+                            <tr>
+                    <th>Id</th>
+                    <td>{{ ligne.id }}</td>
+                </tr>
+                            <tr>
+                    <th>Libelle_alle</th>
+                    <td>{{ ligne.libelleAlle }}</td>
+                </tr>
+                            <tr>
+                    <th>Libelle_retour</th>
+                    <td>{{ ligne.libelleRetour }}</td>
+                </tr>
+                            <tr>
+                    <th>Numero</th>
+                    <td>{{ ligne.numero }}</td>
+                </tr>
+                            <tr>
+                    <th>Cout</th>
+                    <td>{{ ligne.cout }}</td>
+                </tr>
+                            <tr>
+                    <th>Distance</th>
+                    <td>{{ ligne.distance }}</td>
+                </tr>
+                            <tr>
+                    <th>DureeMoyenneDepart</th>
+                    <td>{{ ligne.dureeMoyenneDepart }}</td>
+                </tr>
+                    </tbody>
+    </table>
+    </div>
+    <div class="modal-footer">
+        
+        <button type="button" class="btn dark btn-outline" data-dismiss="modal">Fermer</button>
+    </div>
+
+{% endblock %}
+{% block javascripts_inline %}
+    <script>
+        
+    </script>
+{% endblock %}

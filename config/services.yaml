@@ -1,0 +1,86 @@
+# This file is the entry point to configure your own services.
+# Files in the packages/ subdirectory configure your dependencies.
+
+# Put parameters here that don't need to change on each machine where the app is deployed
+# https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
+parameters:
+    locale: fr
+
+services:
+    # default configuration for services in *this* file
+    _defaults:
+        autowire: true      # Automatically injects dependencies in your services.
+        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+        public: false       # Allows optimizing the container by removing unused services; this also means
+                            # fetching services directly from the container via $container->get() won't work.
+                            # The best practice is to be explicit about your dependencies anyway.
+
+    # makes classes in src/ available to be used as services
+    # this creates a service per class whose id is the fully-qualified class name
+    App\:
+        resource: '../src/*'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Entity/'
+            - '../src/Kernel.php'
+            - '../src/Tests/'
+            - '../src/Migrations/'
+
+    # controllers are imported separately to make sure services can be injected
+    # as action arguments even if you don't extend any base controller class
+    App\Controller\:
+        resource: '../src/Controller/'
+        tags: ['controller.service_arguments']
+
+    # add more service definitions when explicit configuration is needed
+    # please note that last definitions always *replace* previous ones
+
+    App\Maker\MakeCrudController:
+        arguments:
+            $doctrineHelper: '@maker.doctrine_helper'
+            $formTypeRenderer: '@maker.renderer.form_type_renderer'
+        tags: ['maker.command']
+
+
+    APY\DataGridBundle\Grid\Action\RowAction:
+        class: App\Service\DataGrid\RowAction
+
+
+    App\Service\FormErrorsSerializer:
+        public: true
+
+    App\Service\FormError:
+        arguments:
+            - '@App\Service\FormErrorSerializer'
+
+    App\Service\Twig\AppExtension:
+        arguments: 
+            $breadcrumb: '@App\Service\Breadcrumb'
+            $token: '@security.token_storage'
+            #$moduleParameters: '@PPCA\ParametreBundle\Service\ModuleParameters'
+        tags:
+            - { name: twig.extension }
+
+    
+    APY\DataGridBundle\Grid\GridManager:
+        autowire: true
+        arguments:
+            $container: "@service_container"
+
+    App\EventSubscriber\HeaderMenuEventSubscriber:
+        arguments: 
+            $requestStack: '@request_stack'
+        #public: true
+        # arguments:
+        #     $container: "@service_container"
+
+    App\Service\Twig\TopMenuGenerator:
+        arguments: 
+            $requestStack: '@request_stack'
+
+    App\Service\Twig\Statistique:
+
+# services:
+#     you_bundle.user_manager:
+#         class: YourBundle\Services\UserManager
+#         arguments: ["@fos_user.util.password_updater", "@fos_user.util.canonical_fields_updater", "@doctrine.orm.entity_manager", "%fos_user.model.user.class%"]

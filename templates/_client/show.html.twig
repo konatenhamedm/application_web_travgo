@@ -1,0 +1,39 @@
+{% block page_content %}
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+        <h4 class="modal-title">Détails Client</h4>
+    </div>
+   
+    <div class="modal-body">
+        <table class="table table-bordered">
+        <tbody>
+                            <tr>
+                    <th>Id</th>
+                    <td>{{ client.id }}</td>
+                </tr>
+                            <tr>
+                    <th>NumCli</th>
+                    <td>{{ client.numCli }}</td>
+                </tr>
+                            <tr>
+                    <th>DateCreation</th>
+                    <td>{{ client.dateCreation ? client.dateCreation|date('Y-m-d H:i:s') : '' }}</td>
+                </tr>
+                            <tr>
+                    <th>ReferenceBancaire</th>
+                    <td>{{ client.referenceBancaire }}</td>
+                </tr>
+                    </tbody>
+    </table>
+    </div>
+    <div class="modal-footer">
+        
+        <button type="button" class="btn dark btn-outline" data-dismiss="modal">Fermer</button>
+    </div>
+
+{% endblock %}
+{% block javascripts_inline %}
+    <script>
+        
+    </script>
+{% endblock %}

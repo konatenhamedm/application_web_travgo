@@ -1,0 +1,39 @@
+{% block page_content %}
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+        <h4 class="modal-title">Détails Position</h4>
+    </div>
+   
+    <div class="modal-body">
+        <table class="table table-bordered">
+        <tbody>
+                            <tr>
+                    <th>Id</th>
+                    <td>{{ position.id }}</td>
+                </tr>
+                            <tr>
+                    <th>Latitude</th>
+                    <td>{{ position.latitude }}</td>
+                </tr>
+                            <tr>
+                    <th>Longitude</th>
+                    <td>{{ position.longitude }}</td>
+                </tr>
+                            <tr>
+                    <th>DateHeurePosition</th>
+                    <td>{{ position.dateHeurePosition }}</td>
+                </tr>
+                    </tbody>
+    </table>
+    </div>
+    <div class="modal-footer">
+        
+        <button type="button" class="btn dark btn-outline" data-dismiss="modal">Fermer</button>
+    </div>
+
+{% endblock %}
+{% block javascripts_inline %}
+    <script>
+        
+    </script>
+{% endblock %}

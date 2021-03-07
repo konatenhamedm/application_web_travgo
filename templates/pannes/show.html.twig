@@ -1,0 +1,43 @@
+{% block page_content %}
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+        <h4 class="modal-title">Détails Pannes</h4>
+    </div>
+   
+    <div class="modal-body">
+        <table class="table table-bordered">
+        <tbody>
+                            <tr>
+                    <th>Id</th>
+                    <td>{{ panne.id }}</td>
+                </tr>
+                            <tr>
+                    <th>DatePanne</th>
+                    <td>{{ panne.datePanne }}</td>
+                </tr>
+                            <tr>
+                    <th>Description</th>
+                    <td>{{ panne.description }}</td>
+                </tr>
+                            <tr>
+                    <th>Latitude</th>
+                    <td>{{ panne.latitude }}</td>
+                </tr>
+                            <tr>
+                    <th>Longitude</th>
+                    <td>{{ panne.longitude }}</td>
+                </tr>
+                    </tbody>
+    </table>
+    </div>
+    <div class="modal-footer">
+        
+        <button type="button" class="btn dark btn-outline" data-dismiss="modal">Fermer</button>
+    </div>
+
+{% endblock %}
+{% block javascripts_inline %}
+    <script>
+        
+    </script>
+{% endblock %}

@@ -1,0 +1,276 @@
+{% extends '_includes/index.html.twig' %}
+
+{% block title %}
+    Clients
+{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item">
+        <a href="#" class="text-muted">Tableau de bord</a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="#" class="text-muted">Clients</a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="#" class="text-muted">Paramètres</a>
+    </li>
+{% endblock %}
+
+{% block style %}
+    {{ parent() }}
+	<style type="text/css" media="screen">
+		.card-header {
+		    padding: 2rem 2.25rem;
+		    margin-bottom: 0;
+		    background-color: #F3F6F9;
+		    /* border-bottom: 2px solid #EBEDF3; */
+		}
+		.card.card-custom>.card-header{
+			min-height: 0px;
+		}
+		.card.card-custom>.card-header.card-header-tabs-line .nav .nav-link{
+			padding-bottom: 1rem; 
+			padding-top: 1rem;
+		}
+		.nav.nav-tabs.nav-tabs-line .nav-link:hover:not(.disabled), .nav.nav-tabs.nav-tabs-line .nav-link.active, .nav.nav-tabs.nav-tabs-line .show>.nav-link
+		{
+			border-bottom: 3px solid #3699FF;
+		}
+	</style>
+{% endblock %}
+
+{% block page_content %}
+
+	<div class="row">
+	    <div class="col-4">
+	        <ul class="nav flex-column nav-pills">
+                <li class="nav-item mb-2">
+                    <a class="nav-link active" data-toggle="tab" href="#civilite" data-href="{{ path('civilite_index') }}">
+                        <span class="nav-icon"><i class="far fa-circle"></i></span>
+                        <span class="nav-text">Civilité</span>
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a class="nav-link" data-toggle="tab" href="#centre" data-href="{{ path('centre_impot_index') }}">
+                        <span class="nav-icon"><i class="far fa-circle"></i></span>
+                        <span class="nav-text">Centre d'impôt</span>
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a class="nav-link" data-toggle="tab" href="#commune" data-href="{{ path('commune_index') }}">
+                        <span class="nav-icon"><i class="far fa-circle"></i></span>
+                        <span class="nav-text">Commune</span>
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a class="nav-link" data-toggle="tab" href="#regime" data-href="{{ path('regime_impot_index') }}">
+                        <span class="nav-icon"><i class="far fa-circle"></i></span>
+                        <span class="nav-text">Régime d'impôt</span>
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a class="nav-link" data-toggle="tab" href="#secteur" data-href="{{ path('secteur_activite_index') }}">
+                        <span class="nav-icon"><i class="far fa-circle"></i></span>
+                        <span class="nav-text">Secteur d'activité</span>
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a class="nav-link" data-toggle="tab" href="#condition" data-href="{{ path('secteur_activite_index') }}">
+                        <span class="nav-icon"><i class="far fa-circle"></i></span>
+                        <span class="nav-text">Condition commerciale</span>
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a class="nav-link" data-toggle="tab" href="#origine" data-href="{{ path('secteur_activite_index') }}">
+                        <span class="nav-icon"><i class="far fa-circle"></i></span>
+                        <span class="nav-text">Origine</span>
+                    </a>
+                </li>
+			</ul>
+	    </div>
+	    <div class="col-8">
+	        <div class="tab-content" id="myTabContent">
+                <div class="tab-pane fade show active" id="civilite" role="tabpanel" aria-labelledby="civilite">
+                    ...marques
+                </div>
+                <div class="tab-pane fade" id="centre" role="tabpanel" aria-labelledby="centre">
+                    ...modèles
+                </div>
+                <div class="tab-pane fade" id="commune" role="tabpanel" aria-labelledby="commune">
+                    ...types
+                </div>
+                <div class="tab-pane fade" id="regime" role="tabpanel" aria-labelledby="regime">
+                    ...assureurs
+                </div>
+                <div class="tab-pane fade" id="secteur" role="tabpanel" aria-labelledby="secteur">
+                    ...modèles
+                </div>
+                <div class="tab-pane fade" id="condition" role="tabpanel" aria-labelledby="condition">
+                    ...types
+                </div>
+                <div class="tab-pane fade" id="origine" role="tabpanel" aria-labelledby="origine">
+                    ...assureurs
+                </div>
+			</div>
+	    </div>
+	</div>
+
+    {# <div class="card card-custom gutter-b">
+	    <div class="card card-custom gutter-b">
+	        <div class="card-header card-header-tabs-line">
+	            <div class="card-toolbar">
+	                <ul class="nav nav-tabs nav-bold nav-tabs-line" id="client-params">
+	                    <li class="nav-item">
+	                        <a class="nav-link active" data-toggle="tab" href="#civilite" data-href="{{ path('civilite_index') }}">
+	                            <span class="nav-icon"><i class="far fa-circle"></i></span>
+	                            <span class="nav-text">Civilité</span>
+	                        </a>
+	                    </li>
+	                    <li class="nav-item">
+	                        <a class="nav-link" data-toggle="tab" href="#centre" data-href="{{ path('centre_impot_index') }}">
+	                            <span class="nav-icon"><i class="far fa-circle"></i></span>
+	                            <span class="nav-text">Centre d'impôt</span>
+	                        </a>
+	                    </li>
+	                    <li class="nav-item">
+	                        <a class="nav-link" data-toggle="tab" href="#commune" data-href="{{ path('commune_index') }}">
+	                            <span class="nav-icon"><i class="far fa-circle"></i></span>
+	                            <span class="nav-text">Commune</span>
+	                        </a>
+	                    </li>
+	                    <li class="nav-item">
+	                        <a class="nav-link" data-toggle="tab" href="#regime" data-href="{{ path('regime_impot_index') }}">
+	                            <span class="nav-icon"><i class="far fa-circle"></i></span>
+	                            <span class="nav-text">Régime d'impôt</span>
+	                        </a>
+	                    </li>
+	                    <li class="nav-item">
+	                        <a class="nav-link" data-toggle="tab" href="#secteur" data-href="{{ path('secteur_activite_index') }}">
+	                            <span class="nav-icon"><i class="far fa-circle"></i></span>
+	                            <span class="nav-text">Secteur d'activité</span>
+	                        </a>
+	                    </li>
+	                    <li class="nav-item">
+	                        <a class="nav-link" data-toggle="tab" href="#condition" data-href="{{ path('secteur_activite_index') }}">
+	                            <span class="nav-icon"><i class="far fa-circle"></i></span>
+	                            <span class="nav-text">Condition commerciale</span>
+	                        </a>
+	                    </li>
+	                    <li class="nav-item">
+	                        <a class="nav-link" data-toggle="tab" href="#origine" data-href="{{ path('secteur_activite_index') }}">
+	                            <span class="nav-icon"><i class="far fa-circle"></i></span>
+	                            <span class="nav-text">Origine</span>
+	                        </a>
+	                    </li>
+	                </ul>
+	            </div>
+	        </div>
+	        <div class="card-body">
+	            <div class="tab-content">
+	                <div class="tab-pane fade show active" id="civilite" role="tabpanel" aria-labelledby="civilite">
+	                    ...marques
+	                </div>
+	                <div class="tab-pane fade" id="centre" role="tabpanel" aria-labelledby="centre">
+	                    ...modèles
+	                </div>
+	                <div class="tab-pane fade" id="commune" role="tabpanel" aria-labelledby="commune">
+	                    ...types
+	                </div>
+	                <div class="tab-pane fade" id="regime" role="tabpanel" aria-labelledby="regime">
+	                    ...assureurs
+	                </div>
+	                <div class="tab-pane fade" id="secteur" role="tabpanel" aria-labelledby="secteur">
+	                    ...modèles
+	                </div>
+	                <div class="tab-pane fade" id="condition" role="tabpanel" aria-labelledby="condition">
+	                    ...types
+	                </div>
+	                <div class="tab-pane fade" id="origine" role="tabpanel" aria-labelledby="origine">
+	                    ...assureurs
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+
+	</div>
+ #}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+    
+        $(function () {
+            function load_content(url, hash) {
+                localStorage.setItem('setwork_tab_cltparam_hash', hash);
+                localStorage.setItem('setwork_tab_cltparam_url', url);
+
+                $.ajax({
+                    url: url,
+                    cache: false,
+                    beforeSend: function () {
+                        $(`#${hash}`).html('<p class="text-center">Chargement des données</p>');
+                    },
+                    success: function (content) {
+                        $(`#${hash}`).empty().html(content);
+                    },
+                    error: function (jqXhr, textStatus, errorThrown) {
+                        let html;
+                        if (jqXhr.status != 404) {
+                            html = '<p class="text-center">Erreur interne du serveur</p>';
+                        } else {
+                            html = '<p class="text-center">Page introuvable</p>';
+                        }
+
+                        $(`#${hash}`).empty().html(html);
+                    }
+                });
+            }
+
+            /********************************************TAB NAVS - ONGLETS********************************************************/
+
+            // Chargement de l'onglet par defaut
+            const hash = localStorage.getItem('setwork_tab_cltparam_hash');
+            const url = localStorage.getItem('setwork_tab_cltparam_url');
+
+            if (hash && $('[href="#'+ hash +'"]').length && $('[href="#'+ hash +'"]').data('href') == url) {
+                
+                const $active_tab_link = $('[href="#'+ hash +'"]');
+                if ($active_tab_link.length) {
+                    const $li_parent = $active_tab_link.closest('li');
+                    $active_tab_link.tab('show');
+                    load_content(url,  hash);
+                }
+
+            } else {
+                
+                if ($('#client-params').children('li').length) {
+                    $('#client-params li:eq(0) a').tab('show'); // Select third tab (0-indexed)
+                    const $active_tab_link = $('#client-params li a.active');
+                    const [, hash] = $active_tab_link.attr('href').split('#');
+                    const active_url = $active_tab_link.data('href');
+
+                    load_content(active_url, hash);
+                }
+               
+            }
+              
+            /**********************************************FIN TAB NAVS - ONGLETS**********************************************/
+
+            localStorage.setItem('reopen_on_page_load', '#client-params|' + $('#client-params').find('li a.active').index());
+
+            // Chargement du contenu des onglets au clique sur un onglet
+            $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+                const target = e.target;
+                const $target = $(target);
+                const href = target.href;
+                if (href) {
+                    const [, hash] = href.split('#');
+                    //alert($target.data('href'))
+                    load_content($target.data('href'), hash);
+                }            
+            });
+        });
+
+    </script>
+{% endblock %}

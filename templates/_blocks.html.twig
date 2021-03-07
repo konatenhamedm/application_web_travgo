@@ -1,0 +1,695 @@
+
+{# ------------------------------------------------------ grid ------------------------------------------------------ #}
+
+{% block grid %}
+
+<div id="grid-wrapper-{{  grid.hash|replace({'grid_': ''})  }}" class="grid-wrapper">
+   
+    <div class="grid-overlay  display-none">
+         <div class="lds-default grid-loader"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+    </div>
+<div class="grid table-scrollable" id="grid-table-{{ grid.hash|replace({'grid_': ''}) }}">
+{% if grid.exports|length > 0 %}
+    {{ grid_exports(grid) }}
+{% endif %}
+{% if grid.totalCount > 0 or grid.isFiltered or grid.noDataMessage is same as (false) %}
+    <form id="{{ grid.hash }}" action="{{ grid.routeUrl }}" method="post">
+        {% if grid.massActions|length > 0 %}
+        <div class="grid_header">
+         {{ grid_actions(grid) }}
+        </div>
+        {% endif %}
+        <div class="grid_body">
+        {% if grid.isPagerSectionVisible %}
+            {{ grid_pager(grid) }}
+        {% endif %}
+        <table class="table--grid">
+        {% if grid.isTitleSectionVisible %}
+            {{ grid_titles(grid) }}
+        {% endif %}
+        {% if grid.isFilterSectionVisible %}
+            {{ grid_filters(grid) }}
+        {% endif %}
+        {{ grid_rows(grid) }}
+        </table>
+        </div>
+        {% if grid.isPagerSectionVisible or grid.exports|length > 0 or grid.tweaks|length > 0 %}
+            <div class="grid_footer">
+            {% if grid.isPagerSectionVisible %}
+                {{ grid_pager(grid) }}
+            {% endif %}
+            {% if grid.exports|length > 0 %}
+                {{ grid_exports(grid) }}
+            {% endif %}
+            {% if grid.tweaks|length > 0 %}
+                {{ grid_tweaks(grid) }}
+            {% endif %}
+            </div>
+        {% endif %}
+        {% if withjs %}
+            {{ grid_scripts(grid) }}
+        {% endif %}
+    </form>
+{% else %}
+    <form id="{{ grid.hash }}" action="{{ grid.routeUrl }}" method="post">
+        {{ grid_no_data(grid) }}
+    </form>
+{% endif %}
+</div>
+</div>
+{% endblock grid %}
+{# --------------------------------------------------- grid_no_data ------------------------------------------------- #}
+{% block grid_no_data %}<p class="no_data text-center">{{ grid.noDataMessage|default('No data')|trans|raw }}</p>{% endblock grid_no_data %}
+{# --------------------------------------------------- grid_no_result ------------------------------------------------- #}
+{% block grid_no_result %}
+{% spaceless %}
+{% set nbColumns = 0 %}
+{% for column in grid.columns %}
+    {% if column.visible(grid.isReadyForExport) %}
+        {% set nbColumns = nbColumns + 1 %}
+    {% endif %}
+{% endfor %}
+<tr class="grid-row-cells">
+    <td class="last-column last-row" colspan="{{ nbColumns }}" style="text-align: center;">{{ grid.noResultMessage|default('No result')|trans|raw }}</td>
+</tr>
+{% endspaceless %}
+{% endblock grid_no_result %}
+{# --------------------------------------------------- grid_titles -------------------------------------------------- #}
+{% block grid_titles %}
+    <thead>
+    <tr class="grid-row-titles">
+    {% for key, column in grid.columns %}
+        {% set translation_domain = column.translationDomain %}
+        {% if column.visible(grid.isReadyForExport) %}
+            <th class="{% if column.align != 'left'%}text-{{ column.align }}{% endif %}{% if column.class %} {{ column.class }}{% endif %}{% if loop.last %} last-column{% endif %} {% if column.size > 0 %}col-sz-{{ key }}-{{ column.size }}{% endif %}"{% if(column.size > -1) %} style="width:1px;"{% endif %}>
+            {%- spaceless %}
+            {% if column.type == 'massaction' %}
+                <input type="checkbox" class="grid-mass-selector" onclick="{{ grid.hash }}_markVisible(this.checked);"/>
+            {% else %}
+                {% set columnTitle = column.title %}
+
+                {% if column.usePrefixTitle == true %}
+                    {% set columnTitle = grid.prefixTitle ~ columnTitle ~ '__abbr' %}
+                    {% if columnTitle|trans({}, translation_domain) == columnTitle %}
+                        {% set columnTitle = grid.prefixTitle ~ column.title %}
+                    {% endif %}
+                {% endif %}
+
+                {% set columnTitle = columnTitle|trans({}, translation_domain) %}
+
+
+                {# {{ columnTitle }} #}
+
+                {% if (column.sortable) %}
+                    <a class="order" href="{{ grid_url('order', grid, column) }}" title="{{ 'Order by'|trans }} {{ columnTitle }}">{{ columnTitle }}</a>
+                    {% if column.order == 'asc' %}
+                        <div class="sort_up"></div>
+                    {% elseif column.order == 'desc' %}
+                        <div class="sort_down"></div>
+                    {% endif %}
+                {% else %}
+                    {{ columnTitle }}
+                {% endif %}
+            {% endif %}
+            {% endspaceless -%}
+            </th>
+        {% endif %}
+    {% endfor %}
+    </tr>
+    </thead>
+{% endblock grid_titles %}
+{# -------------------------------------------------- grid_filters -------------------------------------------------- #}
+{% block grid_filters %}
+    <tr class="grid-row-filters">
+    {% for column in grid.columns %}
+        {% if column.visible(grid.isReadyForExport) %}
+        <th  class="{% if column.class %}{{ column.class }}{% endif %}{% if loop.last %} last-column{% endif %}"{% if(column.size > -1) %} style="width:1px;"{% endif %}>{% if column.filterable %}{{ grid_filter(column, grid)|raw }}{% endif %}</th>
+        {% endif %}
+    {% endfor %}
+    </tr>
+{% endblock grid_filters %}
+{# -------------------------------------------------- grid_search -------------------------------------------------- #}
+{% block grid_search %}
+{% if grid.isFilterSectionVisible %}
+    <div class="grid-search">
+        <form id="{{ grid.hash }}_search" action="{{ grid.routeUrl }}" method="post" data-submitted="false">
+        {% for column in grid.columns %}
+            {% if column.isFilterable and column.type not in ['actions', 'massaction'] %}
+                {% if column.usePrefixTitle == true %}
+                    {% set columnTitle = grid.prefixTitle ~ column.title %}
+                {% else %}
+                    {% set columnTitle = column.title %}
+                {% endif %}
+                <div class="{{ cycle(['odd', 'even'], loop.index) }}"><label>{{ columnTitle|trans }}</label>{{ grid_filter(column, grid, false)|raw }}</div>
+            {% endif %}
+        {% endfor %}
+            <div class="grid-search-action">
+                <button class="grid-search-submit btn btn-default">{{ 'Search'|trans }}</button>
+                <button class="grid-search-reset btn btn-default" onclick="return {{ grid.hash }}_reset();">{{ 'Reset'|trans }}</button>
+            </div>
+        </form>
+    </div>
+{% endif %}
+{% endblock grid_search %}
+{# ---------------------------------------------------- grid_rows --------------------------------------------------- #}
+{% block grid_rows %}
+    {% for row in grid.rows %}
+    {% set last_row = loop.last %}
+    {% spaceless %}
+        {% set gridColumns %}
+            {% for key, column in grid.columns %}
+                {% if column.visible(grid.isReadyForExport) %}
+                    <td class="grid-col-{{ key }} grid-column-{{ column.renderBlockId }}{% if column.class %} {{ column.class }}{% endif %}{% if column.align != 'left'%} text-{{ column.align }}{% endif %}{% if loop.last %} last-column{% endif %}{% if last_row %} last-row{% endif %}">{{ grid_cell(column, row, grid)|raw }}</td>
+                {% endif %}
+            {% endfor %}
+        {% endset %}
+        <tr data-id="{{ row.primaryKeyValue.id|default(-1) }}" {% if row.color != '' %} style="background-color:{{ row.color }};"{% endif %} class="grid-row-cells {{ cycle(['odd', 'even'], loop.index) }}{% if row.class != '' %} {{ row.class }}{% endif %}">
+        {{ gridColumns }}
+    {% endspaceless %}
+    </tr>
+    {% else %}
+        {{ grid_no_result(grid) }}
+    {% endfor %}
+{% endblock grid_rows %}
+{# ---------------------------------------------------- grid_pager -------------------------------------------------- #}
+{% block grid_pager %}
+    {% if pagerfanta %}
+        {{ grid_pagerfanta(grid) }}
+    {% else %}
+        <div class="pager" style="float:left">
+            {{ grid_pager_totalcount(grid) }}
+            {{ grid_pager_selectpage(grid) }}
+            {{ grid_pager_results_perpage(grid) }}
+        </div>
+    {% endif %}
+{% endblock grid_pager %}
+{# ---------------------------------------------------- grid_pager_totalcount -------------------------------------------------- #}
+{% block grid_pager_totalcount %}
+{{ '%count% Results, ' | transchoice(grid.totalCount, {'%count%': grid.totalCount}) }}
+{% endblock grid_pager_totalcount %}
+{# ---------------------------------------------------- grid_pager_selectpage -------------------------------------------------- #}
+{% block grid_pager_selectpage %}
+{{ 'Page'|trans }}
+{% spaceless %}
+{#<input type="button" class="prev" {% if grid.page <= 0 %}disabled="disabled"{% endif %} value="<" onclick="return {{ grid.hash }}_previousPage();"/>
+<input type="text" class="current" value="{{ grid.page + 1 }}" size="2" onkeypress="return {{ grid.hash }}_enterPage(event, parseInt(this.value)-1);"/>
+<input type="button" value=">" class="next" {% if grid.page >= grid.pageCount-1 %}disabled="disabled"{% endif %} onclick="return {{ grid.hash }}_nextPage();"/> {{ 'of %count%'|trans({ '%count%' : grid.pageCount }) }}#}
+<button class="prev btn btn-default" {% if grid.page <= 0 %}disabled="disabled"{% endif %} onclick="return {{ grid.hash }}_previousPage();">&laquo;</button>
+<input type="text" class="current" value="{{ grid.page + 1 }}" size="2" onkeypress="return {{ grid.hash }}_enterPage(event, parseInt(this.value)-1);"/>
+<button class="next btn btn-default" {% if grid.page >= grid.pageCount-1 %}disabled="disabled"{% endif %} onclick="return {{ grid.hash }}_nextPage();">&raquo;</button> 
+{% endspaceless %}
+{% endblock grid_pager_selectpage %}
+{# ---------------------------------------------------- grid_pager_results_perpage -------------------------------------------------- #}
+{% block grid_pager_results_perpage %}
+{{ ', Display'|trans }}
+<select onchange="return {{ grid.hash }}_resultsPerPage(this.value);">
+{% for key, value in grid.limits %}
+    <option value="{{ key }}"{% if (key == grid.limit) %} selected="selected"{% endif %}>{{ value }}</option>
+{% endfor %}
+</select> {{ 'Items per page'|trans }}
+{% endblock grid_pager_results_perpage %}
+{# --------------------------------------------------- grid_actions ------------------------------------------------- #}
+{% block grid_actions %}
+<div class="mass-actions">
+    <span class="grid_massactions_helper">
+        <a href="#" onclick="return {{ grid.hash }}_markVisible(true);" class="btn btn-xs btn-default">{{ 'Select visible'|trans }}</a> 
+        <a href="#" onclick="return {{ grid.hash }}_markVisible(false);"  class="btn btn-xs btn-default">{{ 'Deselect visible'|trans }}</a> 
+        <a href="#" onclick="return {{ grid.hash }}_markAll(true);"  class="btn btn-xs btn-default">{{ 'Select all'|trans }}</a> 
+        <a href="#" onclick="return {{ grid.hash }}_markAll(false);"  class="btn btn-xs btn-default">{{ 'Deselect all'|trans }}</a>
+        <span class="mass-actions-selected" id="{{ grid.hash }}_mass_action_selected"></span>
+    </span>
+    {% spaceless %}
+    <div style="float:right;" class="grid_massactions">
+        {{ 'Action'|trans }}
+        <input type="hidden" id="{{ grid.hash }}_mass_action_all" name="{{ grid.hash }}[{{ constant('APY\\DataGridBundle\\Grid\\Grid::REQUEST_QUERY_MASS_ACTION_ALL_KEYS_SELECTED') }}]" value="0"/>
+        <select name="{{ grid.hash }}[{{ constant('APY\\DataGridBundle\\Grid\\Grid::REQUEST_QUERY_MASS_ACTION') }}]" class="input-row">
+            <option value="-1"></option>
+            {% for key, massAction in grid.massActions %}
+            <option value="{{ key }}">{{ massAction.title|trans }}</option>
+            {% endfor %}
+        </select>
+        <input type="submit"  value="{{ 'Submit Action'|trans }}" class="btn btn-info btn-xs" />
+    </div>
+    {% endspaceless %}
+</div>
+{% endblock grid_actions %}
+{# --------------------------------------------------- grid_exports ------------------------------------------------- #}
+{% block grid_exports %}
+<div class="exports" style="float:right">
+    {% spaceless %}
+        {{ 'Export'|trans }}
+            <select name="{{grid.hash}}[{{ constant('APY\\DataGridBundle\\Grid\\Grid::REQUEST_QUERY_EXPORT') }}]" class="input-row">
+            <option value="-1"></option>
+            {% for key, export in grid.exports %}
+            <option value="{{key}}">{{ export.title|trans }}</option>
+            {% endfor %}
+        </select>
+        <input type="submit" value="{{ 'Export'|trans }}" class="btn btn-xs green btn-outline sbold" />
+    {% endspaceless %}
+</div>
+{% endblock grid_exports %}
+{# --------------------------------------------------- grid_tweaks ------------------------------------------------- #}
+{% block grid_tweaks %}
+<div class="tweaks" style="float:right">
+    {% spaceless %}
+        {{ 'Tweaks'|trans }}
+            <select name="{{grid.hash}}[{{ constant('APY\\DataGridBundle\\Grid\\Grid::REQUEST_QUERY_TWEAK') }}]">
+            <option value=""></option>
+            {% for key, tweak in grid.tweaks %}
+            <option value="{{key}}">{{ tweak.title|trans }}</option>
+            {% endfor %}
+        </select>
+        <input type="submit" value="{{ 'Tweak'|trans }}"/>
+    {% endspaceless %}
+</div>
+{% endblock grid_tweaks %}
+{# ------------------------------------------------ grid_column_actions_cell --------------------------------------------- #}
+{% block grid_column_actions_cell %}
+
+    {% set actions = column.getActionsToRender(row) %}
+     {#<div class="grid-row-actions btn-group">
+         <button class="btn btn-xs green dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false"> Actions
+            <i class="fa fa-angle-down"></i>
+        </button>
+        <ul class="dropdown-menu" role="menu">
+            {% for action in actions %}
+                <li>
+                {% if action.route is defined %}
+                <a href="{{ url(action.route, column.routeParameters(row, action), false) }}" target="{{ action.target }}"{% if action.confirm %} onclick="return confirm('{{ action.confirmMessage }}')"{% endif %}{% for name, value in action.attributes %} {{ name }}="{{ value }}" {% endfor %}>
+                    {% if action.title|trim starts with '<' %}{{ action.title|raw }}{% else %}{{ action.title|trans }}{% endif %}
+                </a>
+                {% elseif action.controller is defined %}
+                    {{ render(controller(action.controller, action.parameters)) }}
+                {% else %}
+                    {{ action | raw }}
+                {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+     </div>#}
+    <div class="grid-row-actions text-center">
+        {% for action in actions %}
+            {% if action.route is defined %}
+                {% set icon = {icon: '', class: ''} %}
+                {% set iconOnly = (action.getIcon is defined and action.getIcon(action.title)) and action.attributes.icon is not defined %}
+                {% if iconOnly %}
+                    {% set icon = action.getIcon(action.title) %}
+                {% endif %}
+
+                {% if not icon.class and action.attributes.class is not defined %}
+                    {% set icon = {icon: '', class: 'bg-blue-sharp bg-font-blue-sharp'} %}
+                {% endif %}
+                
+                {% set linkClass = 'btn btn-icon btn-sm mr-2 ' ~ icon.class %}
+                <a href="{{ url(action.route, column.routeParameters(row, action), false) }}" target="{{ action.target }}"{% if action.confirm %} onclick="return confirm('{{ action.confirmMessage }}')"{% endif %}{% for name, value in action.attributes if name not in ['class', 'icon', 'ajax'] %} {{ name }}="{{ value }}" {% endfor %} 
+                class="{{linkClass }}  {{ action.attributes.class | default('') }}" {% if action.attributes.ajax is not defined or action.attributes.ajax != false %}data-toggle="modal" data-target="#exampleModalSizeLg2"{% endif %}>
+                
+                {% if icon.icon  %}
+                   
+                    {% if icon.icon != action.title %}
+                        <i class="{{ icon.icon }}" title="{{ action.title }}"></i>
+                        {# <span class="{{ icon.icon }}" title="{{ action.title }}"></span>
+                        <span class="hide">{{ action.title }}</span> #}
+                    {% else %}
+                        {{ action.title }}
+                    {% endif %}
+                {% else %}
+                    {% if action.attributes.icon is defined  and action.attributes.icon %}
+                        <span class="{{ action.attributes.icon }}" title="{{action.title }}"></span>
+                    {% else %}
+                        {% if action.title|trim starts with '<' %}{{ action.title|raw }}{% else %}{{ action.title|trans }}{% endif %}
+                    {% endif %}
+                {% endif %}
+                </a>
+            {% elseif action.controller is defined %}
+                {{ render(controller(action.controller, action.parameters)) }}
+            {% else %}
+                {{ action | raw }}
+            {% endif %}
+
+        {% endfor %}
+    </div>
+{% endblock grid_column_actions_cell %}
+{# ------------------------------------------------ grid_column_massaction_cell --------------------------------------------- #}
+{% block grid_column_massaction_cell %}
+    <input type="checkbox" class="action" value="1" name="{{ grid.hash }}[{{ column.id }}][{{ row.primaryFieldValue }}]"/>
+{% endblock grid_column_massaction_cell %}
+{# ------------------------------------------------ grid_column_type_boolean_cell --------------------------------------------- #}
+{% block grid_column_boolean_cell %}
+
+    <span class="grid_boolean_{{ value }}" {% if value starts with '<i' %}{% else %}title="{{ value }}"{% endif %}>
+        {{ block('grid_column_cell') }}
+    </span>
+
+{% endblock grid_column_boolean_cell %}
+{% block grid_column_type_boolean_cell %}
+	{{ block('grid_column_boolean_cell') }}
+{% endblock grid_column_type_boolean_cell %}
+{# ------------------------------------------------ grid_column_type_rank_cell --------------------------------------------- #}
+{% block grid_column_rank_cell %}
+{{ grid.page * grid.limit + value }}
+{% endblock grid_column_rank_cell %}
+{% block grid_column_type_rank_cell %}
+	{{ block('grid_column_rank_cell') }}
+{% endblock grid_column_type_rank_cell %}
+{# ------------------------------------------------ grid_column_type_array_columns --------------------------------------------- #}
+{% block grid_column_array_cell %}
+{% set sourceValues = row.field(column.id) %}
+{% set values = value %}
+{% for key, index in values -%}
+    {% set value = index %}
+    {% set sourceValue = sourceValues[key] %}
+    {{ block('grid_column_cell') | raw }}
+    {% if not loop.last %}
+      {{ column.separator | raw }}
+    {% endif %}
+{%- endfor %}
+{% endblock grid_column_array_cell %}
+{% block grid_column_type_array_cell %}
+	{{ block('grid_column_array_cell') }}
+{% endblock grid_column_type_array_cell %}
+{# ------------------------------------------------ grid_column_type_join_cell --------------------------------------------- #}
+{% block grid_column_join_cell %}
+<div class="block__cell_content block__cell_join">
+{% for key, index in column.joinColumns -%}
+    {% set value = row.field(index) %}
+    {% set sourceValue = value %}
+    {{ block('grid_column_cell_raw') | raw }}{{ column.separator | raw }}
+{%- endfor %}
+</div>
+{% endblock grid_column_join_cell %}
+{% block grid_column_type_join_cell %}
+	{{ block('grid_column_join_cell') }}
+{% endblock grid_column_type_join_cell %}
+{# ------------------------------------------------ grid_column_type_simple_array_columns --------------------------------------------- #}
+{% block grid_column_type_simple_array_cell %}
+    {{ block('grid_column_array_cell') }}
+{% endblock grid_column_type_simple_array_cell %}
+{# ------------------------------------------- grid_column_cell ---------------------------------------- #}
+{% block grid_column_cell %}
+<div class="block__cell_content">
+    {{ block('grid_column_cell_raw') }}
+</div>
+{% endblock grid_column_cell %}
+
+{% block grid_column_cell_raw %}
+{%- spaceless %}
+    {% if column.filterable and column.searchOnClick %}
+        {% set sourceValue = sourceValue is defined ? sourceValue : row.field(column.id) %}
+        <a href="?{{ grid.hash }}[{{ column.id }}][from]={{ sourceValue | url_encode() }}" class="searchOnClick">{{ value }}</a>
+    {% elseif column.safe is same as (false) %}
+        {{ value|raw }}
+    {% else %}
+        {% if value is time %}
+            {{ value|date('H:i') }}
+        {% else %}
+             {{ value|escape(column.safe)|raw }}
+        {% endif %}
+    {% endif %}
+{% endspaceless -%}
+{% endblock grid_column_cell_raw %}
+{# -------------------------------------------- grid_column_operator --------------------------------------- #}
+{% block grid_column_operator %}
+{% if column.operatorsVisible %}
+<div class="grid-filter-operator">
+    <select name="{{ grid.hash }}[{{ column.id }}][operator]" onchange="{{ grid.hash }}_switchOperator(this, '{{ grid.hash }}__{{ column.id }}__query__'{% if submitOnChange is same as (false) %}, false{% endif%});" class="form-control input-sm">
+    {% for operator in column.operators %}
+        <option value="{{ operator }}"{% if op == operator %} selected="selected"{% endif %}>{{ operator |trans }}</option>
+    {% endfor %}
+    </select>
+</div>
+{% endif %}
+{% endblock grid_column_operator %}
+{# -------------------------------------------- grid_column_filter_type_input --------------------------------------- #}
+{% block grid_column_filter_type_input %}
+{% set btwOperator = constant('APY\\DataGridBundle\\Grid\\Column\\Column::OPERATOR_BTW') %}
+{% set btweOperator = constant('APY\\DataGridBundle\\Grid\\Column\\Column::OPERATOR_BTWE') %}
+{% set isNullOperator = constant('APY\\DataGridBundle\\Grid\\Column\\Column::OPERATOR_ISNULL') %}
+{% set isNotNullOperator = constant('APY\\DataGridBundle\\Grid\\Column\\Column::OPERATOR_ISNOTNULL') %}
+{% set op = column.data.operator is defined ? column.data.operator : column.defaultOperator %}
+{% set from = column.data.from is defined ? column.data.from : null %}
+{% set to = column.data.to is defined ? column.data.to : null %}
+<div class="grid-filter-input clearfix">
+    {{ grid_column_operator(column, grid, op, submitOnChange) }}
+    <div class="grid-filter-input-query {% if not column.operatorsVisible %}no-float{% endif %}">
+        <input type="{{ column.inputType }}" value="{{ from }}" class="grid-filter-input-query-from form-control input-sm" name="{{ grid.hash }}[{{ column.id }}][from]" id="{{ grid.hash }}__{{ column.id }}__query__from" {% if submitOnChange is same as (true) %}onkeypress="return {{ grid.hash }}_submitForm(event, this.form);"{% if column.inputType == 'text' %} oninput="return {{ grid.hash }}_submitForm(null, this.form);"{% endif %}{% endif%} {{ ( op == isNullOperator or op == isNotNullOperator ) ? 'style="display: none;" disabled="disabled"' : '' }} />
+        <input type="{{ column.inputType }}" value="{{ to }}" class="grid-filter-input-query-to form-control input-sm" name="{{ grid.hash }}[{{ column.id }}][to]" id="{{ grid.hash }}__{{ column.id }}__query__to" {% if submitOnChange is same as (true) %}onkeypress="return {{ grid.hash }}_submitForm(event, this.form);" {% if column.inputType == 'text' %}oninput="return {{ grid.hash }}_submitForm(null, this.form);"{% endif %}{% endif%} {{ ( op == btwOperator or op == btweOperator ) ? '': 'style="display: none;" disabled="disabled"' }} />
+    </div>
+</div>
+{% endblock grid_column_filter_type_input %}
+{# -------------------------------------------- grid_column_filter_type_select --------------------------------------- #}
+{% block grid_column_filter_type_select %}
+{% set btwOperator = constant('APY\\DataGridBundle\\Grid\\Column\\Column::OPERATOR_BTW') %}
+{% set btweOperator = constant('APY\\DataGridBundle\\Grid\\Column\\Column::OPERATOR_BTWE') %}
+{% set isNullOperator = constant('APY\\DataGridBundle\\Grid\\Column\\Column::OPERATOR_ISNULL') %}
+{% set isNotNullOperator = constant('APY\\DataGridBundle\\Grid\\Column\\Column::OPERATOR_ISNOTNULL') %}
+{% set op = column.data.operator is defined ? column.data.operator : column.defaultOperator %}
+{% set from = column.data.from is defined ? column.data.from : null %}
+{% set to = column.data.to is defined ? column.data.to : null %}
+{% set multiple = column.selectMulti %}
+{% set expanded = column.selectExpanded %}
+<span class="grid-filter-select">
+    {{ grid_column_operator(column, grid, op, submitOnChange) }}
+    <span class="grid-filter-select-query">
+    {% if expanded %}
+        <span class="grid-filter-select-query-from" id="{{ grid.hash }}__{{ column.id }}__query__from" {{ ( op == isNullOperator or op == isNotNullOperator ) ? 'style="display: none;" disabled="disabled"' : '' }}>
+        {% for key, value in column.values %}
+            <span><input type="{% if multiple %}checkbox{% else %}radio{% endif %}" name="{{ grid.hash }}[{{ column.id }}][from][]" value="{{ key }}" {% if key in from %} checked="checked" class="icheck" {% endif %} {% if submitOnChange is same as (true) %}onclick="return {{ grid.hash }}_submitForm(event, this.form);"{% endif%}/><label>{{ value }}</label></span>
+        {% endfor %}
+        </span>
+        <span class="grid-filter-select-query-to" id="{{ grid.hash }}__{{ column.id }}__query__to" {{ ( op == btwOperator or op == btweOperator ) ? '': 'style="display: none;" disabled="disabled"' }}>
+        {% for key, value in column.values %}
+            <span><input type="{% if multiple %}checkbox{% else %}radio{% endif %}" name="{{ grid.hash }}[{{ column.id }}][to]" value="{{ key }}" {% if not to is null and to == key %} checked="checked" class="icheck" {% endif %} {% if submitOnChange is same as (true) %}onclick="return {{ grid.hash }}_submitForm(event, this.form);"{% endif%}/><label>{{ value }}</label></span>
+        {% endfor %}
+        </span>
+        {% if multiple %}<input type="submit" value="{{ 'Go'|trans }}" />{% endif %}
+    {% else %}
+        <select{% if multiple %} multiple="multiple"{% endif %} name="{{ grid.hash }}[{{ column.id }}][from][]" class="grid-filter-select-query-from form-control input-sm" id="{{ grid.hash }}__{{ column.id }}__query__from" {% if submitOnChange is same as (true) %}onchange="return {{ grid.hash }}_submitForm(event, this.form);"{% endif%} {{ ( op == isNullOperator or op == isNotNullOperator ) ? 'style="display: none;" disabled="disabled"' : '' }}>
+            <option value="">&nbsp;</option>
+            {% for key, value in column.values %}
+                <option value="{{ key }}"{% if key in from %} selected="selected"{% endif %}>{{ value }}</option>
+            {% endfor %}
+        </select>
+        <select name="{{ grid.hash }}[{{ column.id }}][to]" class="grid-filter-select-query-to form-control input-sm" id="{{ grid.hash }}__{{ column.id }}__query__to" {% if submitOnChange is same as (true) %}onchange="return {{ grid.hash }}_submitForm(event, this.form);"{% endif%} {{ ( op == btwOperator or op == btweOperator ) ? '': 'style="display: none;" disabled="disabled"' }}>
+            <option value="">&nbsp;</option>
+            {% for key, value in column.values %}
+                <option value="{{ key }}"{% if not to is null and to == key %} selected="selected"{% endif %}>{{ value }}</option>
+            {% endfor %}
+        </select>
+        {% if multiple %}<input type="submit" value="{{ 'Go'|trans }}" class="btn btn-xs btn-default" />{% endif %}
+    {% endif %}
+    </span>
+</span>
+{% endblock grid_column_filter_type_select %}
+{# -------------------------------------------- grid_column_filter_type_massaction --------------------------------------- #}
+{% block grid_column_filter_type_massaction %}
+    <button class="grid-search-reset btn btn-sm" value="R" onclick="return {{ grid.hash }}_reset();">
+        {{ 'Reset'|trans }}
+    </button>
+{% endblock grid_column_filter_type_massaction %}
+{# -------------------------------------------- grid_column_filter_type_massaction_filter --------------------------------------- #}
+{#% block grid_column_filter_type_actions %}
+    <a class="grid-reset" href="{{ grid_url('reset', grid) }}">{{ 'Reset'|trans }}</a>
+{% endblock grid_column_filter_type_actions %#}
+
+
+
+{# --------------------------------------------------- grid_scripts -------------------------------------------------- #}
+{% block grid_scripts %}
+<script type="text/javascript">
+{{ grid_scripts_goto(grid) }}
+{{ grid_scripts_reset(grid) }}
+{{ grid_scripts_previous_page(grid) }}
+{{ grid_scripts_next_page(grid) }}
+{{ grid_scripts_enter_page(grid) }}
+{{ grid_scripts_results_per_page(grid) }}
+{{ grid_scripts_mark_visible(grid) }}
+{{ grid_scripts_mark_all(grid) }}
+{{ grid_scripts_switch_operator(grid) }}
+{{ grid_scripts_submit_form(grid) }}
+{{ grid_scripts_ajax(grid) }}
+
+localStorage.setItem('__grid_hash', '{{ grid.hash | replace({'grid_': ''}) }}');
+</script>
+{% endblock grid_scripts %}
+
+{% block grid_scripts_goto %}
+function {{ grid.hash }}_goto(url)
+{
+    if (/MSIE (8\.\d+);/.test(navigator.userAgent)) {
+        var referLink = document.createElement('a');
+        referLink.href = url;
+        document.body.appendChild(referLink);
+        referLink.click();
+    } else {
+        window.location.href = url;
+    }
+
+    return false;
+}
+{% endblock grid_scripts_goto %}
+
+{% block grid_scripts_reset %}
+function {{ grid.hash }}_reset()
+{
+    {{ grid.hash }}_goto('{{ grid_url('reset', grid) }}');
+
+    return false;
+}
+{% endblock grid_scripts_reset %}
+
+{% block grid_scripts_previous_page %}
+function {{ grid.hash }}_previousPage()
+{
+    {{ grid.hash }}_goto('{{ grid_url('page', grid, grid.page - 1 > 0 ? grid.page - 1 : 0) }}');
+
+    return false;
+}
+{% endblock grid_scripts_previous_page %}
+
+{% block grid_scripts_next_page %}
+function {{ grid.hash }}_nextPage()
+{
+    {{ grid.hash }}_goto('{{ grid_url('page', grid, grid.page + 1) }}');
+
+    return false;
+}
+{% endblock grid_scripts_next_page %}
+
+{% block grid_scripts_enter_page %}
+function {{ grid.hash }}_enterPage(event, page)
+{
+    key = event.which;
+
+    if (window.event) {
+        key = window.event.keyCode; //IE
+    }
+
+    if (key == 13) {
+        {{ grid.hash }}_goto('{{ grid_url('page', grid) }}' + page);
+
+        return false;
+    }
+}
+{% endblock grid_scripts_enter_page %}
+
+{% block grid_scripts_results_per_page %}
+function {{ grid.hash }}_resultsPerPage(limit)
+{
+    {{ grid.hash }}_goto('{{ grid_url('limit', grid) }}' + limit);
+
+    return true;
+}
+{% endblock grid_scripts_results_per_page %}
+
+{% block grid_scripts_mark_visible %}
+function {{ grid.hash }}_markVisible(select)
+{
+    var form = document.getElementById('{{ grid.hash }}');
+
+    var counter = 0;
+
+    for (var i=0; i < form.elements.length; i++ ) {
+        if (form.elements[i].type == 'checkbox') {
+            form.elements[i].checked = select;
+
+            if (form.elements[i].checked){
+               counter++;
+            }
+        }
+    }
+
+    {% if grid.isFilterSectionVisible %}
+    counter--;
+    {% endif %}
+
+    var selected = document.getElementById('{{ grid.hash }}_mass_action_selected');
+    selected.innerHTML = counter > 0 ? '{{ 'Selected _s_ rows'|trans }}'.replace('_s_', counter) : '';
+
+    document.getElementById('{{ grid.hash }}_mass_action_all').value = '0';
+
+    return false;
+}
+{% endblock grid_scripts_mark_visible %}
+
+{% block grid_scripts_mark_all %}
+function {{ grid.hash }}_markAll(select)
+{
+    var form = document.getElementById('{{ grid.hash }}');
+
+    for (var i=0; i < form.elements.length; i++ ) {
+        if (form.elements[i].type == 'checkbox') {
+            form.elements[i].checked = select;
+        }
+    }
+
+    var selected = document.getElementById('{{ grid.hash }}_mass_action_selected');
+
+    if (select) {
+        document.getElementById('{{ grid.hash }}_mass_action_all').value = '1';
+        selected.innerHTML = '{{ 'Selected _s_ rows'|trans }}'.replace('_s_', '{{ grid.totalCount }}');
+    } else {
+        document.getElementById('{{ grid.hash }}_mass_action_all').value = '0';
+        selected.innerHTML = '';
+    }
+
+    return false;
+}
+{% endblock grid_scripts_mark_all %}
+
+{% block grid_scripts_switch_operator %}
+{% set btwOperator = constant('APY\\DataGridBundle\\Grid\\Column\\Column::OPERATOR_BTW') %}
+{% set btweOperator = constant('APY\\DataGridBundle\\Grid\\Column\\Column::OPERATOR_BTWE') %}
+{% set isNullOperator = constant('APY\\DataGridBundle\\Grid\\Column\\Column::OPERATOR_ISNULL') %}
+{% set isNotNullOperator = constant('APY\\DataGridBundle\\Grid\\Column\\Column::OPERATOR_ISNOTNULL') %}
+function {{ grid.hash }}_switchOperator(elt, query_, submitOnChange)
+{
+	submitOnChange = (typeof submitOnChange == 'undefined') ? true : submitOnChange;
+    var inputFrom = document.getElementById(query_+'from');
+    var inputTo = document.getElementById(query_+'to');
+    if ((elt.options[elt.selectedIndex].value == '{{ btwOperator }}') || (elt.options[elt.selectedIndex].value == '{{ btweOperator }}')) {
+        inputFrom.style.display = '';
+        inputFrom.disabled=false;
+        inputTo.style.display = '';
+        inputTo.disabled=false;
+    } else if ((elt.options[elt.selectedIndex].value == '{{ isNullOperator }}') || (elt.options[elt.selectedIndex].value == '{{ isNotNullOperator }}')) {
+        inputFrom.style.display = 'none';
+        inputFrom.disabled=true;
+        inputTo.style.display = 'none';
+        inputTo.disabled=true;
+        if (submitOnChange) {
+            elt.form.submit();
+        }
+    } else {
+        inputFrom.style.display = '';
+        inputFrom.disabled=false;
+        inputTo.style.display = 'none';
+        inputTo.disabled=true;
+    }
+}
+{% endblock grid_scripts_switch_operator %}
+
+{% block grid_scripts_submit_form %}
+function {{ grid.hash }}_submitForm(event, form)
+{
+    console.log(event);
+    if (!event) {
+        form.submit();
+        return true;
+    }
+    key = event.which;
+
+    if (window.event) {
+        key = window.event.keyCode; //IE
+    }
+
+    if (event.type != 'keypress' || key == 13) {
+        form.submit();
+    }
+
+    return true;
+}
+{% endblock grid_scripts_submit_form %}
+
+{% block grid_scripts_ajax %}
+{% endblock grid_scripts_ajax %}

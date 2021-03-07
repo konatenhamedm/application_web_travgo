@@ -1,0 +1,5 @@
+apy_data_grid:
+    no_result_message: Aucune donnée disponible!
+    no_data_message: Aucune donnée disponible!
+    # theme: 'blocks.html.twig'
+    limits: [50, 100, 200]
