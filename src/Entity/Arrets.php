@@ -20,7 +20,7 @@ class Arrets
      * @ORM\Column(type="integer")
      */
     private $id;
-
+/*knkcjf*/
     /**
      * @ORM\Column(type="string", length=255)
      */
