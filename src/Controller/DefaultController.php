@@ -16,6 +16,17 @@ class DefaultController extends AbstractController
             'user' => $this->getUser(),
         ]);
     }
+
+    /**
+     * @Route("/test/home", name="default_test")
+     */
+    public function index_test()
+    {
+        return $this->render('default/test.html.twig', [
+
+        ]);
+    }
+
     /**
      * @Route("/", name="def")
      */
